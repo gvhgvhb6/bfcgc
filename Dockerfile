@@ -1,21 +1,22 @@
-
-FROM node:bullseye-slim
-
-WORKDIR /app
-ENV TZ="Asia/Shanghai" \
-  NODE_ENV="production"
-
-COPY package.json index.js start.sh /app/
+FROM ubuntu:14.04
  
-EXPOSE 3000
-
-
-RUN chmod 777 package.json index.js start.sh /app &&\
-  apt-get update && \
-  apt-get install -y curl && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-  npm install
-
-
-CMD ["node", "index.js"]
+MAINTAINER Leo Rutten "leo.rutten@kuleuven.be"
+ 
+ENV REFRESHED_AT 2015-04-23
+ 
+RUN apt-get update
+RUN apt-get upgrade -y
+ 
+RUN apt-get install -y nodejs
+ 
+# needs this to find the nodejs exec
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+ 
+RUN apt-get install -y npm
+RUN /usr/bin/npm install ws
+RUN /usr/bin/npm install node-static
+ 
+EXPOSE 8080
+EXPOSE 80
+ 
+ENTRYPOINT ["/usr/bin/node", "/root/server.js"]
